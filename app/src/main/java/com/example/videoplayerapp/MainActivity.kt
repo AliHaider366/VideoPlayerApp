@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity(), VideoAdapter.OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         permissionResult.launch(permissions)
 
