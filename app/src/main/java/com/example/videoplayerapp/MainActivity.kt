@@ -55,12 +55,14 @@ class MainActivity : AppCompatActivity(), VideoAdapter.OnItemClickListener {
         permissionResult.launch(permissions)
 
 
+
     }
 
     private fun showContent() {
         videoList = fetchVideos()
 //        Toast.makeText(this@MainActivity, videoList.toString(), Toast.LENGTH_SHORT).show()
-        videoAdapter = VideoAdapter(videoList, this)
+        videoAdapter = VideoAdapter(this)
+        videoAdapter.setVideoData(videoList)
         binding.recyclerView.adapter = videoAdapter
     }
 

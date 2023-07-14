@@ -1,20 +1,25 @@
 package com.example.videoplayerapp
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.videoplayerapp.databinding.ItemRowBinding
 import java.io.File
+import java.text.DecimalFormat
 
-class VideoAdapter(private val videos: ArrayList<String>, private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
+class VideoAdapter(private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
+
+    private lateinit var videos: ArrayList<String>
+
+    fun setVideoData(videoList : ArrayList<String>){
+        videos = videoList
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_row, parent, false)
-        return VideoViewHolder(itemView)
+        val binding = ItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return VideoViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
@@ -24,28 +29,26 @@ class VideoAdapter(private val videos: ArrayList<String>, private val onItemClic
 
     override fun getItemCount(): Int = videos.size
 
-    inner class VideoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class VideoViewHolder(private val binding: ItemRowBinding) : RecyclerView.ViewHolder(binding.root) {
+
+
 
         fun bind(video: String) {
             // Bind data to the views in the item layout
             val file = File(video)
-            val date = java.util.Date(file.lastModified())
-            val formattedDate = android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", date)
+            val formattedDate = android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", java.util.Date(file.lastModified()))
             val fileSizeKB = file.length() / 1024.toDouble()
             val fileSizeMB = fileSizeKB / 1024.toDouble()
-            itemView.findViewById<TextView>(R.id.textViewTitle).text = file.name
+            binding.textViewTitle.text = file.name
             if(fileSizeKB>1024) {
-                itemView.findViewById<TextView>(R.id.textViewSize).text =
-                    "Size : " + fileSizeMB.toString().substring(0, fileSizeMB.toString().lastIndexOf('.') + 2) + " MB"
+                binding.textViewSize.text = "Size : " + DecimalFormat("#.##").format(fileSizeMB).toString() + " MB"
             }else{
-                itemView.findViewById<TextView>(R.id.textViewSize).text =
-                    "Size : " + fileSizeKB.toString().substring(0, fileSizeMB.toString().lastIndexOf('.') + 2) + " KB"
+                binding.textViewSize.text = "Size : " + DecimalFormat("#.##").format(fileSizeKB).toString() + " KB"
             }
-            itemView.findViewById<TextView>(R.id.textViewDate).text = "Date : $formattedDate"
+            binding.textViewDate.text = "Date : $formattedDate"
 
             // Load thumbnail using an image loading library like Picasso or Glide
-            val thumbnailImageView = itemView.findViewById<ImageView>(R.id.thumbnailImageView)
-            Glide.with(itemView.context).load(video).into(thumbnailImageView)
+            Glide.with(itemView.context).load(video).into(binding.thumbnailImageView)
 
             itemView.setOnClickListener {
                 val position = adapterPosition
